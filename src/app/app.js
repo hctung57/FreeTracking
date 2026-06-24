@@ -290,7 +290,9 @@ function updateUi(state) {
   latestState = state;
   renderCounts(state);
   renderLogs(state.results || []);
-  downloadButton.disabled = !(state.status === "done" && state.results && state.results.length > 0);
+  const downloadReady = state.status === "done" && state.results && state.results.length > 0;
+  downloadButton.disabled = !downloadReady;
+  downloadButton.classList.toggle("ready", downloadReady);
   actionButton.disabled = false;
   resetButton.disabled = state.status === "running";
 }
