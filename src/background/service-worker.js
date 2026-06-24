@@ -3,6 +3,7 @@ import { USPS_BATCH_SIZE, buildBatchTrackingUrl, createEmptyResult } from "../sh
 const STORAGE_KEY = "freeTrackingState";
 const JOB_STATUS_IDLE = "idle";
 const JOB_STATUS_RUNNING = "running";
+const JOB_STATUS_STOPPED = "stopped";
 const JOB_STATUS_DONE = "done";
 const DASHBOARD_URL = "dist/app/app.html";
 const NEXT_BATCH_ALARM_NAME = "freeTrackingNextBatch";
@@ -28,6 +29,7 @@ const state = {
 
 let activeRunPromise = null;
 let hasLoadedSavedState = false;
+let activeBatchTabId = null;
 
 function getDashboardUrl() {
   return chrome.runtime.getURL(DASHBOARD_URL);
@@ -149,12 +151,21 @@ function waitForTabComplete(tabId, timeoutMs = 30000) {
       }
     };
 
+    const removedListener = (removedTabId) => {
+      if (removedTabId === tabId) {
+        cleanup();
+        reject(new Error(`Tab ${tabId} was closed`));
+      }
+    };
+
     function cleanup() {
       clearTimeout(timer);
       chrome.tabs.onUpdated.removeListener(listener);
+      chrome.tabs.onRemoved.removeListener(removedListener);
     }
 
     chrome.tabs.onUpdated.addListener(listener);
+    chrome.tabs.onRemoved.addListener(removedListener);
   });
 }
 
@@ -164,6 +175,10 @@ async function closeTab(tabId) {
   } catch {
     // Ignore failures when the tab was already closed.
   }
+}
+
+function isCurrentJob(jobId) {
+  return state.status === JOB_STATUS_RUNNING && state.jobId === jobId;
 }
 
 function collectBatchResults(batchTrackingNumbers, batchResponse) {
@@ -217,7 +232,7 @@ async function runTrackingJob(jobId) {
 }
 
 async function runTrackingJobInternal(jobId) {
-  while (state.status === JOB_STATUS_RUNNING && state.jobId === jobId) {
+  while (isCurrentJob(jobId)) {
     const remainingTrackingNumbers = state.queue.slice(state.results.length);
 
     if (remainingTrackingNumbers.length === 0) {
@@ -238,28 +253,53 @@ async function runTrackingJobInternal(jobId) {
     try {
       const tab = await chrome.tabs.create({ url: buildBatchTrackingUrl(batchTrackingNumbers), active: false });
       tabId = tab.id ?? null;
+      activeBatchTabId = tabId;
 
       if (!tabId) {
         throw new Error("Unable to create tracking tab");
       }
 
       await waitForTabComplete(tabId);
+      if (!isCurrentJob(jobId)) {
+        break;
+      }
+
       const response = await sendMessageToTab(tabId, {
         type: "FREE_TRACKING_FETCH_STATUS",
         trackingNumbers: batchTrackingNumbers
       });
+
+      if (!isCurrentJob(jobId)) {
+        break;
+      }
 
       if (!response || !response.ok) {
         throw new Error(response?.error || "USPS status could not be read");
       }
 
       const batchResults = collectBatchResults(batchTrackingNumbers, response);
+      if (!isCurrentJob(jobId)) {
+        break;
+      }
+
       for (const result of batchResults) {
+        if (!isCurrentJob(jobId)) {
+          break;
+        }
+
         await appendResult(result);
       }
     } catch (error) {
+      if (!isCurrentJob(jobId)) {
+        break;
+      }
+
       const errorMessage = error instanceof Error ? error.message : String(error);
       for (const trackingNumber of batchTrackingNumbers) {
+        if (!isCurrentJob(jobId)) {
+          break;
+        }
+
         const result = createEmptyResult(trackingNumber);
         result.error = errorMessage;
         await appendResult(result);
@@ -268,16 +308,20 @@ async function runTrackingJobInternal(jobId) {
       if (tabId !== null) {
         await closeTab(tabId);
       }
+
+      if (activeBatchTabId === tabId) {
+        activeBatchTabId = null;
+      }
     }
 
     const remainingAfterBatch = state.queue.length - state.results.length;
-    if (state.status === JOB_STATUS_RUNNING && state.jobId === jobId && remainingAfterBatch > 0) {
+    if (isCurrentJob(jobId) && remainingAfterBatch > 0) {
       await scheduleNextBatch(randomBatchDelayMs());
       return;
     }
   }
 
-  if (state.jobId === jobId) {
+  if (state.jobId === jobId && state.status === JOB_STATUS_RUNNING) {
     await chrome.alarms.clear(NEXT_BATCH_ALARM_NAME);
     state.status = JOB_STATUS_DONE;
     state.currentTracking = "";
@@ -327,6 +371,57 @@ async function startJob(trackingNumbers) {
       throw error;
     });
 
+  return { ok: true, jobId };
+}
+
+async function stopJob() {
+  if (state.status !== JOB_STATUS_RUNNING) {
+    throw new Error("No running tracking job to stop");
+  }
+
+  const jobId = state.jobId;
+  await chrome.alarms.clear(NEXT_BATCH_ALARM_NAME);
+
+  if (activeBatchTabId !== null) {
+    await closeTab(activeBatchTabId);
+    activeBatchTabId = null;
+  }
+
+  state.status = JOB_STATUS_STOPPED;
+  state.currentTracking = "";
+  state.phase = "";
+  state.waitUntil = "";
+  state.waitRemainingSeconds = 0;
+  state.finishedAt = nowIso();
+
+  await persistState();
+  await notifyDashboard();
+
+  if (activeRunPromise) {
+    activeRunPromise.catch(() => {});
+  }
+
+  return { ok: true, jobId };
+}
+
+async function continueJob() {
+  if (state.status !== JOB_STATUS_STOPPED) {
+    throw new Error("No paused tracking job to continue");
+  }
+
+  const jobId = state.jobId;
+  state.status = JOB_STATUS_RUNNING;
+  state.phase = "processing";
+  state.currentTracking = "";
+  state.waitUntil = "";
+  state.waitRemainingSeconds = 0;
+  state.startedAt = state.startedAt || nowIso();
+  state.finishedAt = "";
+
+  await persistState();
+  await notifyDashboard();
+
+  runTrackingJob(jobId).catch(() => {});
   return { ok: true, jobId };
 }
 
@@ -402,6 +497,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message?.type === "FREE_TRACKING_START_JOB") {
       const trackingNumbers = Array.isArray(message.trackingNumbers) ? message.trackingNumbers : [];
       return await startJob(trackingNumbers);
+    }
+
+    if (message?.type === "FREE_TRACKING_STOP_JOB") {
+      return await stopJob();
+    }
+
+    if (message?.type === "FREE_TRACKING_CONTINUE_JOB") {
+      return await continueJob();
     }
 
     if (message?.type === "FREE_TRACKING_GET_STATE") {

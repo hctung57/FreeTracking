@@ -31722,7 +31722,7 @@ var manualModeButton = document.getElementById("manualModeButton");
 var fileModeButton = document.getElementById("fileModeButton");
 var manualInputSection = document.getElementById("manualInputSection");
 var fileInputSection = document.getElementById("fileInputSection");
-var startButton = document.getElementById("startButton");
+var actionButton = document.getElementById("actionButton");
 var downloadButton = document.getElementById("downloadButton");
 var totalCount = document.getElementById("totalCount");
 var processedCount = document.getElementById("processedCount");
@@ -31783,6 +31783,12 @@ function setJobBadge(state) {
     jobStatePill.style.borderColor = "var(--border)";
     return;
   }
+  if (state.status === "stopped") {
+    jobStatePill.textContent = "Stopped";
+    jobStatePill.style.color = "var(--red)";
+    jobStatePill.style.borderColor = "rgba(243, 114, 127, 0.5)";
+    return;
+  }
   jobStatePill.textContent = "Idle";
   jobStatePill.style.color = "var(--text-muted)";
   jobStatePill.style.borderColor = "var(--border)";
@@ -31791,16 +31797,22 @@ function renderCounts(state) {
   const total = Number(state.total ?? 0);
   const processed = Number(state.processed ?? 0);
   const progressPercent = total > 0 ? Math.min(100, Math.round(processed / total * 100)) : 0;
+  const isRunning = state.status === "running";
+  const isStopped = state.status === "stopped";
+  const isDone = state.status === "done";
   totalCount.textContent = String(state.total ?? 0);
   processedCount.textContent = String(state.processed ?? 0);
   successCount.textContent = String(state.success ?? 0);
   errorCount.textContent = String(state.error ?? 0);
-  currentStatus.textContent = state.status === "running" && state.phase === "waiting" ? formatWaitStatus(state) : `${progressPercent}%`;
+  currentStatus.textContent = state.status === "running" && state.phase === "waiting" ? formatWaitStatus(state) : isStopped ? `Stopped at ${progressPercent}%` : `${progressPercent}%`;
   progressBar.style.width = `${progressPercent}%`;
-  progressBar.classList.toggle("running", state.status === "running");
-  progressBar.classList.toggle("waiting", state.status === "running" && state.phase === "waiting");
-  progressBar.classList.toggle("done", state.status === "done" && progressPercent === 100);
-  progressWrap.classList.toggle("hidden", !(state.status === "running" || state.status === "done"));
+  progressBar.classList.toggle("running", isRunning);
+  progressBar.classList.toggle("waiting", isRunning && state.phase === "waiting");
+  progressBar.classList.toggle("done", isDone && progressPercent === 100);
+  progressBar.classList.toggle("stopped", isStopped);
+  progressWrap.classList.toggle("hidden", !(isRunning || isDone || isStopped));
+  actionButton.textContent = state.status === "running" ? "Stop" : state.status === "stopped" ? "Continue" : "Start";
+  actionButton.classList.toggle("danger", state.status === "running");
   setJobBadge(state);
 }
 function renderLogs(results) {
@@ -31920,6 +31932,7 @@ function updateUi(state) {
   renderCounts(state);
   renderLogs(state.results || []);
   downloadButton.disabled = !(state.status === "done" && state.results && state.results.length > 0);
+  actionButton.disabled = false;
   resetButton.disabled = state.status === "running";
 }
 function startCountdownTicker() {
@@ -31949,7 +31962,7 @@ async function startJob() {
     currentStatus.textContent = "Enter at least one tracking number";
     return;
   }
-  startButton.disabled = true;
+  actionButton.disabled = true;
   downloadButton.disabled = true;
   resetButton.disabled = true;
   jobStatePill.textContent = "Starting";
@@ -31964,6 +31977,32 @@ async function startJob() {
     return;
   }
   await refreshState();
+}
+async function stopJob() {
+  const response = await sendMessage({ type: "FREE_TRACKING_STOP_JOB" });
+  if (!response?.ok) {
+    currentStatus.textContent = response?.error || "Unable to stop job";
+    return;
+  }
+  await refreshState();
+}
+async function continueJob() {
+  const response = await sendMessage({ type: "FREE_TRACKING_CONTINUE_JOB" });
+  if (!response?.ok) {
+    currentStatus.textContent = response?.error || "Unable to continue job";
+    return;
+  }
+  await refreshState();
+}
+async function runPrimaryAction() {
+  const status = latestState?.status || "idle";
+  if (status === "running") {
+    return stopJob();
+  }
+  if (status === "stopped") {
+    return continueJob();
+  }
+  return startJob();
 }
 async function downloadExcel() {
   const response = await sendMessage({ type: "FREE_TRACKING_GET_RESULTS" });
@@ -32015,10 +32054,10 @@ async function resetState() {
   uploadedFileData = null;
   await refreshState();
 }
-startButton.addEventListener("click", () => {
-  startJob().catch((error) => {
+actionButton.addEventListener("click", () => {
+  runPrimaryAction().catch((error) => {
     currentStatus.textContent = error instanceof Error ? error.message : String(error);
-    startButton.disabled = false;
+    actionButton.disabled = false;
     jobStatePill.textContent = "Error";
     jobStatePill.style.color = "var(--red)";
   });
@@ -32063,10 +32102,6 @@ fileInput.addEventListener("change", () => {
 chrome.runtime.onMessage.addListener((message) => {
   if (message?.type === "FREE_TRACKING_STATE_UPDATED" && message.state) {
     updateUi(message.state);
-    if (message.state.status !== "running") {
-      startButton.disabled = false;
-      resetButton.disabled = false;
-    }
   }
 });
 refreshState().catch((error) => {

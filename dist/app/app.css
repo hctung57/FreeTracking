@@ -274,6 +274,12 @@ button.tertiary {
   border: 1px solid var(--border);
 }
 
+button.danger {
+  background: rgba(243, 114, 127, 0.12);
+  color: #ffb8c0;
+  border: 1px solid rgba(243, 114, 127, 0.35);
+}
+
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -378,6 +384,10 @@ button:disabled {
 
 .progress-bar.done {
   background: linear-gradient(90deg, #16c35f 0%, #1ed760 100%);
+}
+
+.progress-bar.stopped {
+  background: linear-gradient(90deg, #f3727f 0%, #f78d98 50%, #fbb1b8 100%);
 }
 
 @keyframes energy-flow {
