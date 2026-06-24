@@ -1,4 +1,4 @@
-import { mkdir, copyFile, rm } from "node:fs/promises";
+import { mkdir, copyFile, rm, readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import esbuild from "esbuild";
@@ -6,7 +6,6 @@ import esbuild from "esbuild";
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(rootDir, "..");
 const distDir = path.join(projectRoot, "dist");
-
 const isWatch = process.argv.includes("--watch");
 
 async function ensureDist() {
@@ -14,11 +13,21 @@ async function ensureDist() {
   await mkdir(path.join(distDir, "background"), { recursive: true });
   await mkdir(path.join(distDir, "content"), { recursive: true });
   await mkdir(path.join(distDir, "app"), { recursive: true });
+  await mkdir(path.join(distDir, "assets"), { recursive: true });
 }
 
 async function copyStaticFiles() {
   await copyFile(path.join(projectRoot, "src", "app", "app.html"), path.join(distDir, "app", "app.html"));
   await copyFile(path.join(projectRoot, "src", "app", "app.css"), path.join(distDir, "app", "app.css"));
+
+  const assetFiles = await readdir(path.join(projectRoot, "assets"));
+  for (const fileName of assetFiles) {
+    if (fileName === ".gitkeep") {
+      continue;
+    }
+
+    await copyFile(path.join(projectRoot, "assets", fileName), path.join(distDir, "assets", fileName));
+  }
 }
 
 async function buildOnce() {
