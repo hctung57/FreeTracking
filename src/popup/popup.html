@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Free Tracking USPS Export</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="header">
+        <h1>USPS Tracking Export</h1>
+        <p>Paste one tracking per line. Errors will not stop the export.</p>
+      </header>
+
+      <section class="card">
+        <label for="trackingInput">Tracking numbers</label>
+        <textarea id="trackingInput" placeholder="Enter tracking numbers, one per line"></textarea>
+        <div class="actions">
+          <button id="startButton">Start</button>
+          <button id="downloadButton" class="secondary" disabled>Download Excel</button>
+        </div>
+      </section>
+
+      <section class="card status-card">
+        <div><strong>Total</strong><span id="totalCount">0</span></div>
+        <div><strong>Processed</strong><span id="processedCount">0</span></div>
+        <div><strong>Success</strong><span id="successCount">0</span></div>
+        <div><strong>Errors</strong><span id="errorCount">0</span></div>
+      </section>
+
+      <section class="card log-card">
+        <div class="log-header">
+          <strong>Progress</strong>
+          <span id="currentStatus">Idle</span>
+        </div>
+        <div id="logList" class="log-list"></div>
+      </section>
+    </main>
+
+    <script type="module" src="./popup.js"></script>
+  </body>
+</html>

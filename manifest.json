@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Free Tracking USPS Export",
+  "version": "1.0.0",
+  "description": "Import tracking numbers, fetch USPS status, and export the results to Excel.",
+  "action": {
+    "default_title": "Free Tracking USPS Export"
+  },
+  "background": {
+    "service_worker": "dist/background/service-worker.js",
+    "type": "module"
+  },
+  "permissions": ["storage", "tabs", "scripting", "downloads", "alarms"],
+  "host_permissions": ["https://tools.usps.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://tools.usps.com/tracking/*"],
+      "js": ["dist/content/usps-content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

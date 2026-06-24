@@ -1,0 +1,136 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, Helvetica, sans-serif;
+  --bg: #f4f7fb;
+  --card: #ffffff;
+  --text: #132238;
+  --muted: #5f6c7b;
+  --border: #d8e0ea;
+  --accent: #1e63d0;
+  --accent-2: #e8eef8;
+  --danger: #c53030;
+  --success: #117a37;
+}
+
+body {
+  margin: 0;
+  min-width: 360px;
+  background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 100%);
+  color: var(--text);
+}
+
+.app {
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.header h1 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+.header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 10px 24px rgba(19, 34, 56, 0.06);
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 180px;
+  resize: vertical;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  font: inherit;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: var(--accent-2);
+  color: var(--accent);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.status-card {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.status-card div {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  display: grid;
+  gap: 4px;
+}
+
+.status-card span {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.log-list {
+  max-height: 160px;
+  overflow: auto;
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.log-item {
+  border-left: 3px solid var(--border);
+  padding-left: 8px;
+}
+
+.log-item.success {
+  border-left-color: var(--success);
+}
+
+.log-item.error {
+  border-left-color: var(--danger);
+}
