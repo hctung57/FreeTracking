@@ -154,10 +154,14 @@ body {
 .layout {
   display: grid;
   gap: 16px;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: 1fr 240px;
 }
 
-.input-card,
+.input-card {
+  position: relative;
+  padding: 16px;
+}
+
 .stats-card,
 .log-card {
   padding: 16px;
@@ -291,7 +295,6 @@ label {
 .mode-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
   margin-bottom: 16px;
 }
 
@@ -300,7 +303,7 @@ label {
 .mode-switch {
   position: relative;
   display: flex;
-  width: 200px;
+  width: 160px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 9999px;
@@ -346,11 +349,13 @@ label {
 /* ── Status dot ── */
 
 .status-dot {
+  position: absolute;
+  top: 20px;
+  right: 18px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: transparent;
-  flex-shrink: 0;
   transition: background 0.3s;
 }
 
