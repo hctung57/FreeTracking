@@ -8,6 +8,7 @@ const TRACKING_STATUS_COLUMN = "TRACKING_STATUS";
 const trackingInput = document.getElementById("trackingInput");
 const fileInput = document.getElementById("fileInput");
 const fileInfo = document.getElementById("fileInfo");
+const modeSwitch = document.getElementById("modeSwitch");
 const manualModeButton = document.getElementById("manualModeButton");
 const fileModeButton = document.getElementById("fileModeButton");
 const manualInputSection = document.getElementById("manualInputSection");
@@ -24,11 +25,26 @@ const logCount = document.getElementById("logCount");
 const progressBar = document.getElementById("progressBar");
 const resetButton = document.getElementById("resetButton");
 const progressWrap = document.getElementById("progressWrap");
+const formError = document.getElementById("formError");
 
 let uploadedFileData = null;
 let inputMode = "manual";
 let latestState = null;
 let countdownTimer = null;
+
+function showFormError(message) {
+  if (!message) {
+    formError.classList.remove("visible");
+    formError.textContent = "";
+    return;
+  }
+  formError.textContent = message;
+  formError.classList.add("visible");
+}
+
+function clearFormError() {
+  showFormError("");
+}
 
 function setInputMode(mode) {
   inputMode = mode === "file" ? "file" : "manual";
@@ -36,8 +52,9 @@ function setInputMode(mode) {
 
   manualModeButton.classList.toggle("active", isManualMode);
   fileModeButton.classList.toggle("active", !isManualMode);
-  manualInputSection.classList.toggle("hidden", !isManualMode);
-  fileInputSection.classList.toggle("hidden", isManualMode);
+  modeSwitch.classList.toggle("file", !isManualMode);
+  manualInputSection.classList.toggle("mode-out", !isManualMode);
+  fileInputSection.classList.toggle("mode-out", isManualMode);
 }
 
 function sendMessage(message) {
@@ -126,7 +143,7 @@ function renderLogs(results) {
     return;
   }
 
-  for (const result of results.slice(-50)) {
+  for (const result of results.slice(-50).reverse()) {
     const item = document.createElement("div");
     item.className = `log-item ${result.error ? "error" : "success"}`;
     item.innerHTML = `
@@ -135,8 +152,6 @@ function renderLogs(results) {
     `;
     logList.appendChild(item);
   }
-
-  logList.scrollTop = logList.scrollHeight;
 }
 
 function detectFormatFromName(fileName) {
@@ -313,15 +328,16 @@ async function startJob() {
   const trackingNumbers = getTrackingNumbersForJob();
 
   if (inputMode === "file" && !uploadedFileData) {
-    currentStatus.textContent = "0%";
-    fileInfo.textContent = "Please select an order file first";
+    showFormError("Please select an order file first");
     return;
   }
 
   if (trackingNumbers.length === 0) {
-    currentStatus.textContent = "Enter at least one tracking number";
+    showFormError("Enter at least one tracking number");
     return;
   }
+
+  clearFormError();
 
   actionButton.disabled = true;
   downloadButton.disabled = true;
@@ -437,20 +453,20 @@ async function resetState() {
 
 actionButton.addEventListener("click", () => {
   runPrimaryAction().catch((error) => {
-    currentStatus.textContent = error instanceof Error ? error.message : String(error);
+    showFormError(error instanceof Error ? error.message : String(error));
     actionButton.disabled = false;
   });
 });
 
 downloadButton.addEventListener("click", () => {
   downloadExcel().catch((error) => {
-    currentStatus.textContent = error instanceof Error ? error.message : String(error);
+    showFormError(error instanceof Error ? error.message : String(error));
   });
 });
 
 resetButton.addEventListener("click", () => {
   resetState().catch((error) => {
-    currentStatus.textContent = "0%";
+    showFormError(error instanceof Error ? error.message : String(error));
     console.error(error);
   });
 });
@@ -489,7 +505,14 @@ uploadZone.addEventListener("drop", (event) => {
   }
 });
 
+trackingInput.addEventListener("input", () => {
+  if (formError.classList.contains("visible")) {
+    clearFormError();
+  }
+});
+
 fileInput.addEventListener("change", () => {
+  clearFormError();
   const [file] = fileInput.files || [];
 
   if (!file) {

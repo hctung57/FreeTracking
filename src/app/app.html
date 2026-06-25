@@ -20,37 +20,35 @@
 
       <section class="layout">
         <article class="card input-card">
-          <div class="mode-switch" role="group" aria-label="Input mode">
+          <div class="mode-switch" role="group" aria-label="Input mode" id="modeSwitch">
+            <div class="mode-slider"></div>
             <button id="manualModeButton" class="mode-button active" type="button">Manual</button>
             <button id="fileModeButton" class="mode-button" type="button">File</button>
           </div>
 
-          <div id="manualInputSection">
-            <label for="trackingInput">Tracking Numbers</label>
-            <textarea id="trackingInput" placeholder="One tracking number per line"></textarea>
+          <div class="mode-panels">
+            <div id="manualInputSection" class="mode-panel">
+              <label for="trackingInput">Tracking Numbers</label>
+              <textarea id="trackingInput" placeholder="One tracking number per line"></textarea>
+            </div>
+
+            <div id="fileInputSection" class="mode-panel mode-out">
+              <div class="upload-zone" id="uploadZone">
+                <svg class="upload-icon" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v1a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-1"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <p class="upload-cta">Choose a file or drag it here</p>
+                <p class="upload-meta">CSV / XLSX &mdash; TRACKING_ID column required</p>
+                <input id="fileInput" type="file" accept=".csv,.xlsx,.xls" />
+              </div>
+              <div class="file-row" id="fileRow" style="display:none">
+                <span id="fileInfo"></span>
+              </div>
+            </div>
           </div>
 
-          <div id="fileInputSection" class="hidden">
-            <div class="upload-zone" id="uploadZone">
-              <svg class="upload-icon" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v1a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-1"/>
-                <polyline points="17 8 12 3 7 8"/>
-                <line x1="12" y1="3" x2="12" y2="15"/>
-              </svg>
-              <p class="upload-cta">Choose a file or drag it here</p>
-              <p class="upload-meta">CSV / XLSX &mdash; TRACKING_ID column required</p>
-              <input id="fileInput" type="file" accept=".csv,.xlsx,.xls" />
-            </div>
-            <div class="file-row" id="fileRow" style="display:none">
-              <span id="fileInfo"></span>
-            </div>
-          </div>
-
-          <div class="actions">
-            <button id="resetButton" class="tertiary" type="button">Reset</button>
-            <button id="actionButton" type="button">Start</button>
-            <button id="downloadButton" class="secondary" disabled>Download</button>
-          </div>
         </article>
 
         <aside class="card stats-card">
@@ -69,6 +67,14 @@
           </div>
         </aside>
       </section>
+
+      <p class="form-error" id="formError"></p>
+
+      <div class="actions">
+        <button id="resetButton" class="tertiary" type="button">Reset</button>
+        <button id="actionButton" type="button">Start</button>
+        <button id="downloadButton" class="secondary" disabled>Download</button>
+      </div>
 
       <section class="card log-card">
         <div class="log-header">
