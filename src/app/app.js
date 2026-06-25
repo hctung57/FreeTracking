@@ -135,6 +135,8 @@ function renderLogs(results) {
     `;
     logList.appendChild(item);
   }
+
+  logList.scrollTop = logList.scrollHeight;
 }
 
 function detectFormatFromName(fileName) {
@@ -265,6 +267,11 @@ function updateUi(state) {
   const downloadReady = state.status === "done" && state.results && state.results.length > 0;
   downloadButton.disabled = !downloadReady;
   downloadButton.classList.toggle("ready", downloadReady);
+  downloadButton.title = downloadReady
+    ? "Download tracking results"
+    : state.status === "running" || state.status === "stopped"
+      ? "Wait for the job to complete"
+      : "Start a job to enable download";
   actionButton.disabled = false;
   resetButton.disabled = state.status === "running";
 
