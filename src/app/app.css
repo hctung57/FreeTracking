@@ -589,6 +589,23 @@ textarea:focus {
   font-weight: 700;
 }
 
+#currentStatus {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.wait-ring {
+  flex-shrink: 0;
+}
+
+.wait-ring circle:last-child {
+  transition: stroke-dashoffset 0.5s linear;
+}
+
 .progress-track {
   width: 100%;
   height: 10px;

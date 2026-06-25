@@ -64,6 +64,7 @@ let inputMode = "manual";
 let latestState = null;
 let countdownTimer = null;
 let formErrorTimer = null;
+let waitTotalSeconds = 0;
 
 function showFormError(message) {
   if (formErrorTimer) {
@@ -153,6 +154,19 @@ function formatWaitStatus(state) {
   return `Next batch in ${seconds}s`;
 }
 
+function buildWaitRing(remainingSeconds) {
+  const r = 10;
+  const circ = 2 * Math.PI * r;
+  const progress = waitTotalSeconds > 0 ? Math.max(0, Math.min(1, remainingSeconds / waitTotalSeconds)) : 0;
+  const offset = circ * (1 - progress);
+  return `<svg class="wait-ring" viewBox="0 0 24 24" width="24" height="24">
+    <circle cx="12" cy="12" r="${r}" fill="none" stroke="#333" stroke-width="2"/>
+    <circle cx="12" cy="12" r="${r}" fill="none" stroke="#e0b13a" stroke-width="2"
+      stroke-linecap="round" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"
+      transform="rotate(-90 12 12)"/>
+  </svg>`;
+}
+
 const playIcon = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
 const stopIcon = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="none"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>';
 
@@ -168,7 +182,14 @@ function renderCounts(state) {
   processedCount.textContent = String(state.processed ?? 0);
   successCount.textContent = String(state.success ?? 0);
   errorCount.textContent = String(state.error ?? 0);
-  currentStatus.textContent = state.status === "running" && state.phase === "waiting" ? formatWaitStatus(state) : isStopped ? `Stopped at ${progressPercent}%` : `${progressPercent}%`;
+  if (state.status === "running" && state.phase === "waiting") {
+    const remaining = getRemainingSeconds(state);
+    if (waitTotalSeconds === 0) waitTotalSeconds = remaining;
+    currentStatus.innerHTML = `${buildWaitRing(remaining)} <span>${remaining}s</span>`;
+  } else {
+    waitTotalSeconds = 0;
+    currentStatus.textContent = isStopped ? `Stopped at ${progressPercent}%` : `${progressPercent}%`;
+  }
   progressBar.style.width = `${progressPercent}%`;
   progressBar.classList.toggle("running", isRunning);
   progressBar.classList.toggle("waiting", isRunning && state.phase === "waiting");
