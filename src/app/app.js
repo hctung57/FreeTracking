@@ -254,7 +254,8 @@ async function handleFileUpload(file) {
     trackingNumbers
   };
 
-  fileInfo.textContent = `${file.name} - ${trackingNumbers.length} tracking IDs`;
+  fileInfo.textContent = `${file.name} — ${trackingNumbers.length} tracking IDs`;
+  fileRow.style.display = "flex";
 }
 
 function updateUi(state) {
@@ -421,7 +422,8 @@ async function resetState() {
 
   trackingInput.value = "";
   fileInput.value = "";
-  fileInfo.textContent = "No file selected";
+  fileInfo.textContent = "";
+  fileRow.style.display = "none";
   uploadedFileData = null;
   await refreshState();
 }
@@ -454,11 +456,38 @@ fileModeButton.addEventListener("click", () => {
   setInputMode("file");
 });
 
+const uploadZone = document.getElementById("uploadZone");
+const fileRow = document.getElementById("fileRow");
+
+uploadZone.addEventListener("click", () => {
+  fileInput.click();
+});
+
+uploadZone.addEventListener("dragover", (event) => {
+  event.preventDefault();
+  uploadZone.classList.add("dragover");
+});
+
+uploadZone.addEventListener("dragleave", () => {
+  uploadZone.classList.remove("dragover");
+});
+
+uploadZone.addEventListener("drop", (event) => {
+  event.preventDefault();
+  uploadZone.classList.remove("dragover");
+  const [file] = event.dataTransfer?.files || [];
+  if (file) {
+    fileInput.files = event.dataTransfer.files;
+    fileInput.dispatchEvent(new Event("change"));
+  }
+});
+
 fileInput.addEventListener("change", () => {
   const [file] = fileInput.files || [];
 
   if (!file) {
-    fileInfo.textContent = "No file selected";
+    fileInfo.textContent = "";
+    fileRow.style.display = "none";
     uploadedFileData = null;
     return;
   }
@@ -468,6 +497,7 @@ fileInput.addEventListener("change", () => {
     uploadedFileData = null;
     fileInput.value = "";
     fileInfo.textContent = `Upload failed: ${message}`;
+    fileRow.style.display = "flex";
     currentStatus.textContent = "0%";
     console.error(error);
   });

@@ -13,7 +13,7 @@
           <img class="app-logo" src="../assets/icon-128.png" alt="Free Tracking logo" />
           <div>
             <h1>Free Tracking</h1>
-            <p>Paste tracking numbers, run batch lookup, and download Excel.</p>
+            <p>USPS batch tracking &amp; Excel export</p>
           </div>
         </div>
       </header>
@@ -31,19 +31,18 @@
           </div>
 
           <div id="fileInputSection" class="hidden">
-            <label for="fileInput">Order File (CSV/XLSX)</label>
-            <div class="upload-panel">
-              <div class="upload-icon-wrap">
-                <span class="upload-icon">⇪</span>
-              </div>
-              <div class="upload-copy">
-                <strong>Drop or choose your order file</strong>
-                <p>CSV, XLSX or XLS with a <span>TRACKING_ID</span> column and optional <span>TRACKING_STATUS</span>.</p>
-              </div>
-              <div class="file-row">
-                <input id="fileInput" type="file" accept=".csv,.xlsx,.xls" />
-                <span id="fileInfo" class="file-info">No file selected</span>
-              </div>
+            <div class="upload-zone" id="uploadZone">
+              <svg class="upload-icon" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v1a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-1"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <p class="upload-cta">Choose a file or drag it here</p>
+              <p class="upload-meta">CSV / XLSX &mdash; TRACKING_ID column required</p>
+              <input id="fileInput" type="file" accept=".csv,.xlsx,.xls" />
+            </div>
+            <div class="file-row" id="fileRow" style="display:none">
+              <span id="fileInfo"></span>
             </div>
           </div>
 
@@ -52,7 +51,6 @@
             <button id="actionButton" type="button">Start</button>
             <button id="downloadButton" class="secondary" disabled>Download</button>
           </div>
-          <p class="hint">Batch size: 35 tracking numbers per request.</p>
         </article>
 
         <aside class="card stats-card">
@@ -74,7 +72,7 @@
 
       <section class="card log-card">
         <div class="log-header">
-          <h2>Latest Results</h2>
+          <h2>Results</h2>
           <span id="logCount">0 items</span>
         </div>
         <div id="logList" class="log-list"></div>
