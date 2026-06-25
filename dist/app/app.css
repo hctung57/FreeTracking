@@ -76,25 +76,6 @@ body {
   font-size: 13px;
 }
 
-.status-chip {
-  border-radius: 9999px;
-  padding: 8px 14px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.4px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  white-space: nowrap;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .layout {
   display: grid;
   gap: 16px;

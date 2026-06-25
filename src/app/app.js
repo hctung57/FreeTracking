@@ -20,7 +20,6 @@ const successCount = document.getElementById("successCount");
 const errorCount = document.getElementById("errorCount");
 const currentStatus = document.getElementById("currentStatus");
 const logList = document.getElementById("logList");
-const jobStatePill = document.getElementById("jobStatePill");
 const logCount = document.getElementById("logCount");
 const progressBar = document.getElementById("progressBar");
 const resetButton = document.getElementById("resetButton");
@@ -92,33 +91,6 @@ function formatWaitStatus(state) {
   return `Next batch in ${seconds}s`;
 }
 
-function setJobBadge(state) {
-  if (state.status === "running") {
-    jobStatePill.textContent = state.phase === "waiting" ? "Waiting" : "Running";
-    jobStatePill.style.color = "var(--green)";
-    jobStatePill.style.borderColor = "rgba(30, 215, 96, 0.5)";
-    return;
-  }
-
-  if (state.status === "done") {
-    jobStatePill.textContent = "Done";
-    jobStatePill.style.color = "var(--text)";
-    jobStatePill.style.borderColor = "var(--border)";
-    return;
-  }
-
-  if (state.status === "stopped") {
-    jobStatePill.textContent = "Stopped";
-    jobStatePill.style.color = "var(--red)";
-    jobStatePill.style.borderColor = "rgba(243, 114, 127, 0.5)";
-    return;
-  }
-
-  jobStatePill.textContent = "Idle";
-  jobStatePill.style.color = "var(--text-muted)";
-  jobStatePill.style.borderColor = "var(--border)";
-}
-
 function renderCounts(state) {
   const total = Number(state.total ?? 0);
   const processed = Number(state.processed ?? 0);
@@ -140,7 +112,6 @@ function renderCounts(state) {
   progressWrap.classList.toggle("hidden", !(isRunning || isDone || isStopped));
   actionButton.textContent = state.status === "running" ? "Stop" : state.status === "stopped" ? "Continue" : "Start";
   actionButton.classList.toggle("danger", state.status === "running");
-  setJobBadge(state);
 }
 
 function renderLogs(results) {
@@ -347,8 +318,6 @@ async function startJob() {
   actionButton.disabled = true;
   downloadButton.disabled = true;
   resetButton.disabled = true;
-  jobStatePill.textContent = "Starting";
-  jobStatePill.style.color = "var(--green)";
 
   const response = await sendMessage({
     type: "FREE_TRACKING_START_JOB",
@@ -461,8 +430,6 @@ actionButton.addEventListener("click", () => {
   runPrimaryAction().catch((error) => {
     currentStatus.textContent = error instanceof Error ? error.message : String(error);
     actionButton.disabled = false;
-    jobStatePill.textContent = "Error";
-    jobStatePill.style.color = "var(--red)";
   });
 });
 
@@ -474,8 +441,6 @@ downloadButton.addEventListener("click", () => {
 
 resetButton.addEventListener("click", () => {
   resetState().catch((error) => {
-    jobStatePill.textContent = "Error";
-    jobStatePill.style.color = "var(--red)";
     currentStatus.textContent = "0%";
     console.error(error);
   });
@@ -504,8 +469,6 @@ fileInput.addEventListener("change", () => {
     fileInput.value = "";
     fileInfo.textContent = `Upload failed: ${message}`;
     currentStatus.textContent = "0%";
-    jobStatePill.textContent = "Error";
-    jobStatePill.style.color = "var(--red)";
     console.error(error);
   });
 });
