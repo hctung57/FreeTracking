@@ -295,6 +295,10 @@ function updateUi(state) {
   downloadButton.classList.toggle("ready", downloadReady);
   actionButton.disabled = false;
   resetButton.disabled = state.status === "running";
+
+  if (state.status === "running" && countdownTimer === null) {
+    startCountdownTicker();
+  }
 }
 
 function startCountdownTicker() {
@@ -303,8 +307,18 @@ function startCountdownTicker() {
   }
 
   countdownTimer = window.setInterval(() => {
-    if (latestState?.status === "running" && latestState.phase === "waiting") {
+    if (!latestState) {
+      return;
+    }
+
+    if (latestState.status === "running" && latestState.phase === "waiting") {
       renderCounts(latestState);
+      return;
+    }
+
+    if (latestState.status === "done" || latestState.status === "idle" || latestState.status === "stopped") {
+      window.clearInterval(countdownTimer);
+      countdownTimer = null;
     }
   }, 250);
 }
@@ -343,7 +357,7 @@ async function startJob() {
 
   if (!response?.ok) {
     currentStatus.textContent = response?.error || "Unable to start job";
-    startButton.disabled = false;
+    actionButton.disabled = false;
     return;
   }
 

@@ -30,10 +30,8 @@ async function copyStaticFiles() {
   }
 }
 
-async function buildOnce() {
-  await ensureDist();
-
-  await esbuild.build({
+function buildOptions() {
+  return {
     entryPoints: {
       "background/service-worker": path.join(projectRoot, "src", "background", "service-worker.js"),
       "content/usps-content": path.join(projectRoot, "src", "content", "usps-content.js"),
@@ -44,28 +42,21 @@ async function buildOnce() {
     format: "esm",
     platform: "browser",
     target: ["chrome120"],
+    minify: true,
     sourcemap: true,
     logLevel: "info"
-  });
+  };
+}
+
+async function buildOnce() {
+  await ensureDist();
+  await esbuild.build(buildOptions());
 
   await copyStaticFiles();
 }
 
 if (isWatch) {
-  const ctx = await esbuild.context({
-    entryPoints: {
-      "background/service-worker": path.join(projectRoot, "src", "background", "service-worker.js"),
-      "content/usps-content": path.join(projectRoot, "src", "content", "usps-content.js"),
-      "app/app": path.join(projectRoot, "src", "app", "app.js")
-    },
-    outdir: distDir,
-    bundle: true,
-    format: "esm",
-    platform: "browser",
-    target: ["chrome120"],
-    sourcemap: true,
-    logLevel: "info"
-  });
+  const ctx = await esbuild.context(buildOptions());
 
   await ensureDist();
   await ctx.watch();

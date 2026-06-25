@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "node ./scripts/build.mjs",
-    "dev": "node ./scripts/build.mjs --watch"
+    "dev": "node ./scripts/build.mjs --watch",
+    "test": "node --test tests/*.test.js"
   },
   "dependencies": {
     "xlsx": "^0.18.5"
