@@ -155,15 +155,15 @@ function formatWaitStatus(state) {
 }
 
 function buildWaitRing(remainingSeconds) {
-  const r = 10;
+  const r = 7;
   const circ = 2 * Math.PI * r;
   const progress = waitTotalSeconds > 0 ? Math.max(0, Math.min(1, remainingSeconds / waitTotalSeconds)) : 0;
   const offset = circ * (1 - progress);
-  return `<svg class="wait-ring" viewBox="0 0 24 24" width="24" height="24">
-    <circle cx="12" cy="12" r="${r}" fill="none" stroke="#333" stroke-width="2"/>
-    <circle cx="12" cy="12" r="${r}" fill="none" stroke="#e0b13a" stroke-width="2"
+  return `<svg class="wait-ring" viewBox="0 0 16 16" width="16" height="16">
+    <circle cx="8" cy="8" r="${r}" fill="none" stroke="#333" stroke-width="1.5"/>
+    <circle cx="8" cy="8" r="${r}" fill="none" stroke="#e0b13a" stroke-width="1.5"
       stroke-linecap="round" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"
-      transform="rotate(-90 12 12)"/>
+      transform="rotate(-90 8 8)"/>
   </svg>`;
 }
 
