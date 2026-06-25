@@ -10,6 +10,21 @@
   --green: #1ed760;
   --red: #f3727f;
   --shadow: rgba(0, 0, 0, 0.45) 0 10px 24px;
+  --body-gradient: linear-gradient(180deg, #151515 0%, #111111 100%);
+}
+
+[data-theme="pink"] {
+  color-scheme: dark;
+  --bg: #1a1018;
+  --surface: #241820;
+  --surface-2: #2d1f28;
+  --text: #ffe8f0;
+  --text-muted: #c49aaa;
+  --border: #4d2d3d;
+  --green: #ff6b9d;
+  --red: #ff4470;
+  --shadow: rgba(255, 107, 157, 0.12) 0 10px 24px;
+  --body-gradient: linear-gradient(180deg, #1f121a 0%, #180e16 100%);
 }
 
 * {
@@ -23,7 +38,7 @@ body {
 
 body {
   margin: 0;
-  background: linear-gradient(180deg, #151515 0%, #111111 100%);
+  background: var(--body-gradient);
   color: var(--text);
 }
 
@@ -74,6 +89,66 @@ body {
   margin: 4px 0 0;
   color: var(--text-muted);
   font-size: 13px;
+}
+
+/* ── Theme toggle ── */
+
+.theme-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 56px;
+  height: 28px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--surface-2);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.theme-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--green);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+[data-theme="pink"] .theme-knob {
+  transform: translateX(28px);
+}
+
+.theme-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 0;
+  transition: opacity 0.2s;
+}
+
+.theme-icon-dark {
+  left: 7px;
+  color: #f0c060;
+  opacity: 1;
+}
+
+[data-theme="pink"] .theme-icon-dark {
+  opacity: 0.3;
+}
+
+.theme-icon-pink {
+  right: 7px;
+  color: #ff6b9d;
+  opacity: 0.3;
+}
+
+[data-theme="pink"] .theme-icon-pink {
+  opacity: 1;
 }
 
 .layout {
@@ -249,21 +324,28 @@ textarea:focus {
   border-color: var(--green);
 }
 
-/* ── Form error ── */
+/* ── Toast ── */
 
 .form-error {
-  margin: 0;
-  font-size: 12px;
-  color: var(--red);
-  min-height: 0;
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-12px);
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--red);
+  border-radius: 10px;
+  z-index: 9999;
+  pointer-events: none;
   opacity: 0;
-  transform: translateY(-4px);
-  transition: opacity 0.2s, transform 0.2s;
+  transition: opacity 0.25s, transform 0.25s;
 }
 
 .form-error.visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(-50%) translateY(0);
 }
 
 /* ── Icon buttons ── */
@@ -271,14 +353,14 @@ textarea:focus {
 .actions {
   display: flex;
   justify-content: center;
-  gap: 12px;
+  gap: 20px;
 }
 
 .icon-btn {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border: 0;
   border-radius: 50%;
   background: var(--surface-2);
@@ -423,7 +505,7 @@ textarea:focus {
   width: 0%;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #2788ff 0%, #5da2ff 50%, #8ebeff 100%);
+  background: var(--green);
   transition: width 0.25s ease;
   position: relative;
   overflow: hidden;

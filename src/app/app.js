@@ -26,20 +26,64 @@ const progressBar = document.getElementById("progressBar");
 const resetButton = document.getElementById("resetButton");
 const progressWrap = document.getElementById("progressWrap");
 const formError = document.getElementById("formError");
+const themeToggle = document.getElementById("themeToggle");
+
+/* ── Theme ── */
+
+const THEME_KEY = "freeTrackingTheme";
+
+function loadTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved === "pink") {
+    document.documentElement.setAttribute("data-theme", "pink");
+    themeToggle.title = "Switch to dark theme";
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+    themeToggle.title = "Switch to pink theme";
+  }
+}
+
+themeToggle.addEventListener("click", () => {
+  const isPink = document.documentElement.getAttribute("data-theme") === "pink";
+  if (isPink) {
+    document.documentElement.removeAttribute("data-theme");
+    localStorage.setItem(THEME_KEY, "dark");
+    themeToggle.title = "Switch to pink theme";
+  } else {
+    document.documentElement.setAttribute("data-theme", "pink");
+    localStorage.setItem(THEME_KEY, "pink");
+    themeToggle.title = "Switch to dark theme";
+  }
+});
+
+loadTheme();
 
 let uploadedFileData = null;
 let inputMode = "manual";
 let latestState = null;
 let countdownTimer = null;
+let formErrorTimer = null;
 
 function showFormError(message) {
+  if (formErrorTimer) {
+    clearTimeout(formErrorTimer);
+    formErrorTimer = null;
+  }
+
   if (!message) {
     formError.classList.remove("visible");
     formError.textContent = "";
     return;
   }
+
   formError.textContent = message;
   formError.classList.add("visible");
+
+  formErrorTimer = setTimeout(() => {
+    formError.classList.remove("visible");
+    formError.textContent = "";
+    formErrorTimer = null;
+  }, 3000);
 }
 
 function clearFormError() {
@@ -108,8 +152,8 @@ function formatWaitStatus(state) {
   return `Next batch in ${seconds}s`;
 }
 
-const playIcon = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
-const stopIcon = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" stroke="none"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>';
+const playIcon = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+const stopIcon = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="none"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>';
 
 function renderCounts(state) {
   const total = Number(state.total ?? 0);
@@ -129,7 +173,6 @@ function renderCounts(state) {
   progressBar.classList.toggle("waiting", isRunning && state.phase === "waiting");
   progressBar.classList.toggle("done", isDone && progressPercent === 100);
   progressBar.classList.toggle("stopped", isStopped);
-  progressWrap.classList.toggle("hidden", !(isRunning || isDone || isStopped));
   actionButton.innerHTML = isRunning ? stopIcon : playIcon;
   actionButton.title = isRunning ? "Stop tracking job" : state.status === "stopped" ? "Continue tracking job" : "Start tracking job";
   actionButton.classList.toggle("danger", isRunning);
