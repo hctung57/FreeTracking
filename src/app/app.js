@@ -7,7 +7,7 @@ const TRACKING_STATUS_COLUMN = "TRACKING_STATUS";
 
 const trackingInput = document.getElementById("trackingInput");
 const fileInput = document.getElementById("fileInput");
-const fileInfo = document.getElementById("fileInfo");
+
 const modeSwitch = document.getElementById("modeSwitch");
 const manualModeButton = document.getElementById("manualModeButton");
 const fileModeButton = document.getElementById("fileModeButton");
@@ -320,8 +320,10 @@ async function handleFileUpload(file) {
     trackingNumbers
   };
 
-  fileInfo.textContent = `${file.name} — ${trackingNumbers.length} tracking IDs`;
-  fileRow.style.display = "flex";
+  fileCardName.textContent = file.name;
+  fileCardCount.textContent = `${trackingNumbers.length} tracking IDs found`;
+  uploadZone.classList.add("hidden");
+  fileCard.classList.remove("hidden");
 }
 
 function updateUi(state) {
@@ -493,10 +495,7 @@ async function resetState() {
   }
 
   trackingInput.value = "";
-  fileInput.value = "";
-  fileInfo.textContent = "";
-  fileRow.style.display = "none";
-  uploadedFileData = null;
+  clearFileSelection();
   await refreshState();
 }
 
@@ -529,9 +528,16 @@ fileModeButton.addEventListener("click", () => {
 });
 
 const uploadZone = document.getElementById("uploadZone");
-const fileRow = document.getElementById("fileRow");
+const fileCard = document.getElementById("fileCard");
+const fileCardName = document.getElementById("fileCardName");
+const fileCardCount = document.getElementById("fileCardCount");
+const fileRemoveBtn = document.getElementById("fileRemoveBtn");
 
 uploadZone.addEventListener("click", () => {
+  fileInput.click();
+});
+
+fileCard.addEventListener("click", () => {
   fileInput.click();
 });
 
@@ -565,21 +571,28 @@ fileInput.addEventListener("change", () => {
   const [file] = fileInput.files || [];
 
   if (!file) {
-    fileInfo.textContent = "";
-    fileRow.style.display = "none";
-    uploadedFileData = null;
+    clearFileSelection();
     return;
   }
 
   handleFileUpload(file).catch((error) => {
     const message = error instanceof Error ? error.message : String(error);
-    uploadedFileData = null;
-    fileInput.value = "";
-    fileInfo.textContent = `Upload failed: ${message}`;
-    fileRow.style.display = "flex";
-    currentStatus.textContent = "0%";
+    showFormError(message);
+    clearFileSelection();
     console.error(error);
   });
+});
+
+function clearFileSelection() {
+  uploadedFileData = null;
+  fileInput.value = "";
+  fileCard.classList.add("hidden");
+  uploadZone.classList.remove("hidden");
+}
+
+fileRemoveBtn.addEventListener("click", (event) => {
+  event.stopPropagation();
+  clearFileSelection();
 });
 
 chrome.runtime.onMessage.addListener((message) => {

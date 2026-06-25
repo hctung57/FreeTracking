@@ -227,16 +227,56 @@ label {
   pointer-events: none;
 }
 
-.file-row {
+/* ── File card (selected state) ── */
+
+.file-card {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 10px;
+  justify-content: space-between;
+  min-height: 320px;
+  padding: 24px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
 }
 
-#fileInfo {
-  color: var(--text-muted);
+.file-card.hidden {
+  display: none;
+}
+
+.file-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.file-card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.file-card-count {
   font-size: 13px;
+  color: var(--text-muted);
+}
+
+.file-card-remove {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.file-card-remove:hover {
+  background: rgba(243, 114, 127, 0.15);
+  color: var(--red);
 }
 
 /* ── Mode switch ── */
@@ -483,22 +523,27 @@ textarea:focus {
 
 /* ── Running border glow ── */
 
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
 .progress-wrap::before {
   content: "";
   position: absolute;
   inset: -2px;
   border-radius: 12px;
   padding: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    transparent 40%,
-    var(--green) 50%,
-    var(--green) 60%,
-    transparent 70%,
-    transparent 100%
+  background: conic-gradient(
+    from var(--border-angle),
+    transparent 0deg,
+    transparent 280deg,
+    var(--green) 320deg,
+    var(--green) 340deg,
+    transparent 350deg,
+    transparent 360deg
   );
-  background-size: 250% 100%;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -509,15 +554,15 @@ textarea:focus {
 
 .progress-wrap.running::before {
   opacity: 1;
-  animation: border-flow 2s linear infinite;
+  animation: border-spin 2.5s linear infinite;
 }
 
-@keyframes border-flow {
-  0% {
-    background-position: 200% 0;
+@keyframes border-spin {
+  from {
+    --border-angle: 0deg;
   }
-  100% {
-    background-position: 0% 0;
+  to {
+    --border-angle: 360deg;
   }
 }
 
