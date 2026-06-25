@@ -353,7 +353,6 @@ function updateUi(state) {
       : "Start a job to enable download";
   actionButton.disabled = false;
   resetButton.disabled = state.status === "running";
-  fileRemoveBtn.disabled = state.status === "running";
 
   if (state.status === "running" && countdownTimer === null) {
     startCountdownTicker();
@@ -545,13 +544,8 @@ const uploadZone = document.getElementById("uploadZone");
 const fileCard = document.getElementById("fileCard");
 const fileCardName = document.getElementById("fileCardName");
 const fileCardCount = document.getElementById("fileCardCount");
-const fileRemoveBtn = document.getElementById("fileRemoveBtn");
 
 uploadZone.addEventListener("click", () => {
-  fileInput.click();
-});
-
-fileCard.addEventListener("click", () => {
   fileInput.click();
 });
 
@@ -603,11 +597,6 @@ function clearFileSelection() {
   fileCard.classList.add("hidden");
   uploadZone.classList.remove("hidden");
 }
-
-fileRemoveBtn.addEventListener("click", (event) => {
-  event.stopPropagation();
-  clearFileSelection();
-});
 
 chrome.runtime.onMessage.addListener((message) => {
   if (message?.type === "FREE_TRACKING_STATE_UPDATED" && message.state) {

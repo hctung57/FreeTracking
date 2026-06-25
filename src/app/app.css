@@ -44,9 +44,9 @@ body {
 
 .app {
   width: min(1200px, 100% - 40px);
-  margin: 24px auto;
+  margin: 20px auto;
   display: grid;
-  gap: 16px;
+  gap: 14px;
 }
 
 .card {
@@ -57,7 +57,7 @@ body {
 }
 
 .header {
-  padding: 18px 20px;
+  padding: 14px 18px;
   display: flex;
   justify-content: space-between;
   gap: 12px;
@@ -71,24 +71,24 @@ body {
 }
 
 .app-logo {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   background: #111;
   object-fit: cover;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 18px rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 6px 14px rgba(0, 0, 0, 0.35);
 }
 
 .header h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 22px;
   line-height: 1.1;
 }
 
 .header p {
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 /* ── Theme toggle ── */
@@ -159,12 +159,12 @@ body {
 
 .input-card {
   position: relative;
-  padding: 16px;
+  padding: 14px;
 }
 
 .stats-card,
 .log-card {
-  padding: 16px;
+  padding: 14px;
 }
 
 label {
@@ -185,9 +185,9 @@ label {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  min-height: 320px;
-  padding: 32px 24px;
+  gap: 8px;
+  min-height: 260px;
+  padding: 24px;
   border: 1px dashed #444;
   border-radius: 14px;
   cursor: pointer;
@@ -235,10 +235,11 @@ label {
 
 .file-card {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 320px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 260px;
   padding: 24px;
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -249,16 +250,12 @@ label {
   display: none;
 }
 
-.file-card-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
 .file-card-name {
   font-size: 15px;
   font-weight: 600;
   color: var(--text);
+  text-align: center;
+  word-break: break-all;
 }
 
 .file-card-count {
@@ -266,36 +263,12 @@ label {
   color: var(--text-muted);
 }
 
-.file-card-remove {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-  flex-shrink: 0;
-}
-
-.file-card-remove:hover:not(:disabled) {
-  background: rgba(243, 114, 127, 0.15);
-  color: var(--red);
-}
-
-.file-card-remove:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
 /* ── Mode bar ── */
 
 .mode-bar {
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 /* ── Mode switch ── */
@@ -307,15 +280,15 @@ label {
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 9999px;
-  padding: 3px;
+  padding: 2px;
 }
 
 .mode-slider {
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: calc(50% - 3px);
-  height: calc(100% - 6px);
+  top: 2px;
+  left: 2px;
+  width: calc(50% - 2px);
+  height: calc(100% - 4px);
   background: var(--green);
   border-radius: 9999px;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -333,8 +306,8 @@ label {
   border-radius: 9999px;
   background: transparent;
   color: var(--text-muted);
-  padding: 8px 0;
-  font-size: 12px;
+  padding: 6px 0;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -414,14 +387,14 @@ label {
 
 textarea {
   width: 100%;
-  min-height: 320px;
+  min-height: 260px;
   resize: vertical;
   border: 1px solid var(--border);
   outline: none;
   background: var(--surface-2);
   color: var(--text);
   border-radius: 12px;
-  padding: 14px;
+  padding: 12px 14px;
   font: inherit;
 }
 
@@ -462,15 +435,15 @@ textarea:focus {
 .actions {
   display: flex;
   justify-content: center;
-  gap: 16px;
-  padding: 4px 0;
+  gap: 14px;
+  padding: 2px 0;
 }
 
 .icon-btn {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border: 0;
   border-radius: 50%;
   background: var(--surface-2);
@@ -527,7 +500,7 @@ textarea:focus {
 .stats-card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   align-content: start;
 }
 
@@ -549,16 +522,16 @@ textarea:focus {
 .stat {
   background: var(--surface-2);
   border-radius: 10px;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
 }
 
 .stat strong {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   line-height: 1;
 }
@@ -575,10 +548,10 @@ textarea:focus {
 .progress-wrap {
   background: var(--surface-2);
   border-radius: 10px;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border: 1px solid var(--border);
   display: grid;
-  gap: 10px;
+  gap: 8px;
   max-height: 120px;
   opacity: 1;
   overflow: hidden;
@@ -612,13 +585,13 @@ textarea:focus {
 }
 
 .progress-meta strong {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
 }
 
 .progress-track {
   width: 100%;
-  height: 14px;
+  height: 10px;
   border-radius: 9999px;
   background: #101010;
   border: 1px solid #2c2c2c;
@@ -736,6 +709,6 @@ textarea:focus {
   }
 
   textarea {
-    min-height: 220px;
+    min-height: 180px;
   }
 }
