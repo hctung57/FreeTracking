@@ -266,53 +266,64 @@ textarea:focus {
   transform: translateY(0);
 }
 
-/* ── Actions ── */
+/* ── Icon buttons ── */
 
 .actions {
   display: flex;
-  gap: 8px;
+  justify-content: center;
+  gap: 12px;
 }
 
-button {
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
   border: 0;
-  border-radius: 9999px;
-  padding: 10px 16px;
-  background: var(--green);
-  color: #000;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.4px;
-  cursor: pointer;
-}
-
-button.secondary {
+  border-radius: 50%;
   background: var(--surface-2);
-  color: var(--text);
-  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
-button.secondary.ready {
+.icon-btn:hover {
+  background: #2a2a2a;
+  color: var(--text);
+}
+
+.icon-btn.primary {
   background: var(--green);
   color: #000;
-  border-color: rgba(30, 215, 96, 0.35);
-  box-shadow: 0 0 0 1px rgba(30, 215, 96, 0.15), 0 10px 20px rgba(30, 215, 96, 0.12);
 }
 
-button.tertiary {
-  background: transparent;
-  color: var(--text-muted);
-  border: 1px solid var(--border);
+.icon-btn.primary:hover {
+  box-shadow: 0 0 14px rgba(30, 215, 96, 0.4);
 }
 
-button.danger {
-  background: rgba(243, 114, 127, 0.12);
-  color: #ffb8c0;
-  border: 1px solid rgba(243, 114, 127, 0.35);
+.icon-btn.danger {
+  background: rgba(243, 114, 127, 0.15);
+  color: var(--red);
 }
 
-button:disabled {
-  opacity: 0.5;
+.icon-btn.danger:hover {
+  background: rgba(243, 114, 127, 0.28);
+}
+
+.icon-btn.ready {
+  background: var(--green);
+  color: #000;
+  box-shadow: 0 0 12px rgba(30, 215, 96, 0.3);
+}
+
+.icon-btn.ready:hover {
+  box-shadow: 0 0 20px rgba(30, 215, 96, 0.5);
+}
+
+.icon-btn:disabled {
+  opacity: 0.3;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* ── Stats ── */
@@ -353,6 +364,8 @@ button:disabled {
   letter-spacing: 1.2px;
 }
 
+/* ── Progress ── */
+
 .progress-wrap {
   background: var(--surface-2);
   border-radius: 10px;
@@ -360,14 +373,29 @@ button:disabled {
   border: 1px solid var(--border);
   display: grid;
   gap: 8px;
+  max-height: 120px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.25s ease, padding 0.35s ease, margin 0.35s ease;
 }
 
 .progress-wrap.hidden {
-  display: none;
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-width: 0;
+  margin: 0;
 }
 
 .hidden {
   display: none !important;
+}
+
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .progress-meta span {
@@ -380,12 +408,6 @@ button:disabled {
 .progress-meta strong {
   font-size: 17px;
   font-weight: 700;
-}
-
-.progress-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .progress-track {

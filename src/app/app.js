@@ -108,6 +108,9 @@ function formatWaitStatus(state) {
   return `Next batch in ${seconds}s`;
 }
 
+const playIcon = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+const stopIcon = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" stroke="none"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>';
+
 function renderCounts(state) {
   const total = Number(state.total ?? 0);
   const processed = Number(state.processed ?? 0);
@@ -127,8 +130,10 @@ function renderCounts(state) {
   progressBar.classList.toggle("done", isDone && progressPercent === 100);
   progressBar.classList.toggle("stopped", isStopped);
   progressWrap.classList.toggle("hidden", !(isRunning || isDone || isStopped));
-  actionButton.textContent = state.status === "running" ? "Stop" : state.status === "stopped" ? "Continue" : "Start";
-  actionButton.classList.toggle("danger", state.status === "running");
+  actionButton.innerHTML = isRunning ? stopIcon : playIcon;
+  actionButton.title = isRunning ? "Stop tracking job" : state.status === "stopped" ? "Continue tracking job" : "Start tracking job";
+  actionButton.classList.toggle("danger", isRunning);
+  actionButton.classList.toggle("primary", !isRunning);
 }
 
 function renderLogs(results) {

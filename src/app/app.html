@@ -84,9 +84,24 @@
           <p class="form-error" id="formError"></p>
 
           <div class="actions">
-            <button id="resetButton" class="tertiary" type="button">Reset</button>
-            <button id="actionButton" type="button">Start</button>
-            <button id="downloadButton" class="secondary" disabled>Download</button>
+            <button id="resetButton" class="icon-btn" type="button" title="Reset">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"/>
+                <path d="M21 20v-7a6 6 0 0 0-6-6H4"/>
+              </svg>
+            </button>
+            <button id="actionButton" class="icon-btn primary" type="button" title="Start tracking job">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" stroke="none">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+            </button>
+            <button id="downloadButton" class="icon-btn" type="button" disabled title="Start a job to enable download">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </button>
           </div>
         </aside>
       </section>
