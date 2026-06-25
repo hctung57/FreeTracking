@@ -186,9 +186,12 @@ function renderCounts(state) {
     const remaining = getRemainingSeconds(state);
     if (waitTotalSeconds === 0) waitTotalSeconds = remaining;
     currentStatus.innerHTML = `${buildWaitRing(remaining)} <span>${remaining}s</span>`;
+    currentStatus.style.color = "#e0b13a";
   } else {
     waitTotalSeconds = 0;
-    currentStatus.textContent = isStopped ? `Stopped at ${progressPercent}%` : `${progressPercent}%`;
+    const text = isStopped ? `Stopped at ${progressPercent}%` : `${progressPercent}%`;
+    currentStatus.innerHTML = `<span>${text}</span>`;
+    currentStatus.style.color = "";
   }
   progressBar.style.width = `${progressPercent}%`;
   progressBar.classList.toggle("running", isRunning);

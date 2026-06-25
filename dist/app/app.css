@@ -15,16 +15,16 @@
 
 [data-theme="pink"] {
   color-scheme: dark;
-  --bg: #1a1018;
-  --surface: #241820;
-  --surface-2: #2d1f28;
-  --text: #ffe8f0;
-  --text-muted: #c49aaa;
-  --border: #4d2d3d;
-  --green: #ff6b9d;
+  --bg: #121212;
+  --surface: #181818;
+  --surface-2: #1f1f1f;
+  --text: #ffffff;
+  --text-muted: #b3b3b3;
+  --border: #363636;
+  --green: #ff69b4;
   --red: #ff4470;
-  --shadow: rgba(255, 107, 157, 0.12) 0 10px 24px;
-  --body-gradient: linear-gradient(180deg, #1f121a 0%, #180e16 100%);
+  --shadow: rgba(255, 105, 180, 0.12) 0 10px 24px;
+  --body-gradient: linear-gradient(180deg, #151515 0%, #111111 100%);
 }
 
 * {
@@ -593,9 +593,13 @@ textarea:focus {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+#currentStatus > span {
+  line-height: 1;
 }
 
 .wait-ring {
