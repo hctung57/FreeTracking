@@ -26,6 +26,7 @@ const progressBar = document.getElementById("progressBar");
 const resetButton = document.getElementById("resetButton");
 const progressWrap = document.getElementById("progressWrap");
 const formError = document.getElementById("formError");
+const statusDot = document.getElementById("statusDot");
 const themeToggle = document.getElementById("themeToggle");
 
 /* ── Theme ── */
@@ -173,11 +174,23 @@ function renderCounts(state) {
   progressBar.classList.toggle("waiting", isRunning && state.phase === "waiting");
   progressBar.classList.toggle("done", isDone && progressPercent === 100);
   progressBar.classList.toggle("stopped", isStopped);
-  progressWrap.classList.toggle("running", isRunning);
   actionButton.innerHTML = isRunning ? stopIcon : playIcon;
   actionButton.title = isRunning ? "Stop tracking job" : state.status === "stopped" ? "Continue tracking job" : "Start tracking job";
   actionButton.classList.toggle("danger", isRunning);
   actionButton.classList.toggle("primary", !isRunning);
+
+  statusDot.className = "status-dot";
+  if (isRunning && state.phase === "waiting") {
+    statusDot.classList.add("waiting");
+  } else if (isRunning) {
+    statusDot.classList.add("running");
+  } else if (state.status === "done") {
+    statusDot.classList.add("done");
+  } else if (state.status === "stopped") {
+    statusDot.classList.add("stopped");
+  } else {
+    statusDot.classList.add("idle");
+  }
 }
 
 function renderLogs(results) {
@@ -340,6 +353,7 @@ function updateUi(state) {
       : "Start a job to enable download";
   actionButton.disabled = false;
   resetButton.disabled = state.status === "running";
+  fileRemoveBtn.disabled = state.status === "running";
 
   if (state.status === "running" && countdownTimer === null) {
     startCountdownTicker();
