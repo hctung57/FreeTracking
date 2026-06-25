@@ -185,7 +185,7 @@ function renderCounts(state) {
   if (state.status === "running" && state.phase === "waiting") {
     const remaining = getRemainingSeconds(state);
     if (waitTotalSeconds === 0) waitTotalSeconds = remaining;
-    currentStatus.innerHTML = `${buildWaitRing(remaining)} <span>${remaining}s</span>`;
+    currentStatus.innerHTML = `${buildWaitRing(remaining)} <span>${remaining}</span>`;
     currentStatus.style.color = "#e0b13a";
   } else {
     waitTotalSeconds = 0;
