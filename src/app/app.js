@@ -251,7 +251,7 @@ async function handleFileUpload(file) {
     throw new Error("The uploaded file does not contain a worksheet");
   }
 
-  const rows = XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
+  const rows = XLSX.utils.sheet_to_json(firstSheet, { defval: "", raw: false });
   if (rows.length === 0) {
     throw new Error("The uploaded file has no data rows");
   }

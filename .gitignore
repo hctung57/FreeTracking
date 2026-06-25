@@ -2,9 +2,19 @@ node_modules/
 .DS_Store
 npm-debug.log*
 
+# Build sourcemaps (not needed at runtime)
+dist/**/*.map
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+Thumbs.db
+
 # Real test data exports
 tests/*.csv
 tests/*.xlsx
 tests/*.xls
-tests/*.html
- 
+tests/*.html 
