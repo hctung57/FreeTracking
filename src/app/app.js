@@ -173,6 +173,7 @@ function renderCounts(state) {
   progressBar.classList.toggle("waiting", isRunning && state.phase === "waiting");
   progressBar.classList.toggle("done", isDone && progressPercent === 100);
   progressBar.classList.toggle("stopped", isStopped);
+  progressWrap.classList.toggle("running", isRunning);
   actionButton.innerHTML = isRunning ? stopIcon : playIcon;
   actionButton.title = isRunning ? "Stop tracking job" : state.status === "stopped" ? "Continue tracking job" : "Start tracking job";
   actionButton.classList.toggle("danger", isRunning);
