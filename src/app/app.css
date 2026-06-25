@@ -132,19 +132,19 @@ body {
 }
 
 .theme-icon-dark {
-  left: 7px;
+  left: 6px;
   color: #f0c060;
   opacity: 1;
 }
 
 [data-theme="pink"] .theme-icon-dark {
-  opacity: 0.3;
+  opacity: 0.25;
 }
 
 .theme-icon-pink {
-  right: 7px;
+  right: 6px;
   color: #ff6b9d;
-  opacity: 0.3;
+  opacity: 0.25;
 }
 
 [data-theme="pink"] .theme-icon-pink {
@@ -329,23 +329,27 @@ textarea:focus {
 .form-error {
   position: fixed;
   top: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-12px);
-  padding: 10px 20px;
+  right: 24px;
+  transform: translateX(20px);
+  padding: 12px 20px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: #fff;
-  background: var(--red);
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 3px solid var(--red);
+  border-radius: 8px;
   z-index: 9999;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.25s, transform 0.25s;
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .form-error.visible {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateX(0);
 }
 
 /* ── Icon buttons ── */
@@ -366,7 +370,11 @@ textarea:focus {
   background: var(--surface-2);
   color: var(--text-muted);
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.icon-btn:not(:disabled):active {
+  transform: scale(0.92);
 }
 
 .icon-btn:hover {
@@ -413,8 +421,17 @@ textarea:focus {
 .stats-card {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   align-content: start;
+}
+
+.stats-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .stats-grid {
