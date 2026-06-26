@@ -1,10 +1,22 @@
 import * as XLSX from "xlsx";
 
+/**
+ * Replace embedded CR and LF with spaces so the CSV output
+ * does not contain bare line-break characters inside unquoted fields.
+ */
+function sanitizeCellValue(value) {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  return value.replace(/[\r\n]+/g, " ");
+}
+
 export function buildWorkbookRows(results) {
   return results.map((result) => ({
-    trackingNumber: result.trackingNumber,
-    tracking_detail: result.tracking_detail || result.currentDetail || result.status || "",
-    error: result.error
+    trackingNumber: sanitizeCellValue(result.trackingNumber),
+    tracking_detail: sanitizeCellValue(result.tracking_detail || result.currentDetail || result.status || ""),
+    error: sanitizeCellValue(result.error)
   }));
 }
 
@@ -22,7 +34,17 @@ export function createWorkbook(results) {
 export function createWorkbookFromRows(rows, headers, sheetName = "Orders") {
   const workbook = XLSX.utils.book_new();
   const safeHeaders = Array.isArray(headers) && headers.length > 0 ? headers : Object.keys(rows[0] || {});
-  const worksheet = XLSX.utils.json_to_sheet(rows, {
+
+  const sanitizedRows = rows.map((row) => {
+    const cleaned = {};
+    for (const [key, value] of Object.entries(row)) {
+      cleaned[key] = sanitizeCellValue(value);
+    }
+
+    return cleaned;
+  });
+
+  const worksheet = XLSX.utils.json_to_sheet(sanitizedRows, {
     header: safeHeaders,
     skipHeader: false
   });
