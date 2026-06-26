@@ -11,7 +11,7 @@ const MIN_BATCH_DELAY_MS = 5000;
 const MAX_BATCH_DELAY_MS = 20000;
 const MAX_BATCH_RETRIES = 3;
 const RETRY_BASE_DELAY_MS = 2000;
-const MAX_RESULTS = 2000;
+const MAX_RESULTS = 10000;
 
 const state = {
   jobId: "",
@@ -218,8 +218,12 @@ function collectBatchResults(batchTrackingNumbers, batchResponse) {
   });
 }
 
+function totalProcessed() {
+  return state.results.length + state.resultsTrimmed;
+}
+
 function updateCounters() {
-  state.processed = state.results.length;
+  state.processed = totalProcessed();
   state.success = state.results.filter((result) => !result.error).length;
   state.error = state.results.filter((result) => Boolean(result.error)).length;
 }
@@ -251,7 +255,7 @@ async function runTrackingJob(jobId) {
 
 async function runTrackingJobInternal(jobId) {
   while (isCurrentJob(jobId)) {
-    const remainingTrackingNumbers = state.queue.slice(state.results.length);
+    const remainingTrackingNumbers = state.queue.slice(totalProcessed());
 
     if (remainingTrackingNumbers.length === 0) {
       break;
@@ -360,7 +364,7 @@ async function runTrackingJobInternal(jobId) {
       }
     }
 
-    const remainingAfterBatch = state.queue.length - state.results.length;
+    const remainingAfterBatch = state.queue.length - totalProcessed();
     if (isCurrentJob(jobId) && remainingAfterBatch > 0) {
       await scheduleNextBatch(randomBatchDelayMs());
       return;

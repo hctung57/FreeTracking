@@ -1,5 +1,6 @@
 export const USPS_TRACKING_URL = "https://tools.usps.com/tracking/";
 export const USPS_BATCH_SIZE = 35;
+export const MAX_TRACKING_INPUT = 10000;
 
 export function normalizeTrackingInput(rawText) {
   const seen = new Set();

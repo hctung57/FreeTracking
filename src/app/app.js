@@ -1,6 +1,6 @@
 import * as XLSX from "xlsx";
 import { createWorkbook, createWorkbookFromRows, workbookToBlob } from "../shared/excel.js";
-import { normalizeTrackingInput } from "../shared/tracking.js";
+import { normalizeTrackingInput, MAX_TRACKING_INPUT } from "../shared/tracking.js";
 
 const TRACKING_ID_COLUMN = "TRACKING_ID";
 const TRACKING_STATUS_COLUMN = "TRACKING_STATUS";
@@ -344,6 +344,10 @@ async function handleFileUpload(file) {
     throw new Error("No valid tracking numbers found in TRACKING_ID column");
   }
 
+  if (trackingNumbers.length > MAX_TRACKING_INPUT) {
+    throw new Error(`This file contains ${trackingNumbers.length.toLocaleString()} tracking IDs. The maximum is ${MAX_TRACKING_INPUT.toLocaleString()}. Please split the file into smaller batches.`);
+  }
+
   const normalizedHeaders = headers.includes(statusHeader) ? headers : [...headers, statusHeader];
 
   uploadedFileData = {
@@ -422,6 +426,11 @@ async function startJob() {
 
   if (trackingNumbers.length === 0) {
     showFormError("Enter at least one tracking number");
+    return;
+  }
+
+  if (trackingNumbers.length > MAX_TRACKING_INPUT) {
+    showFormError(`Maximum ${MAX_TRACKING_INPUT.toLocaleString()} tracking numbers allowed. You have ${trackingNumbers.length.toLocaleString()}. Please split into smaller batches.`);
     return;
   }
 
