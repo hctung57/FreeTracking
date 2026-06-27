@@ -325,8 +325,7 @@ async function handleFileUpload(file) {
     throw new Error("The uploaded file does not contain a worksheet");
   }
 
-  const isCsv = detectFormatFromName(file.name) === "csv";
-  const rows = XLSX.utils.sheet_to_json(firstSheet, { defval: "", raw: isCsv });
+  const rows = XLSX.utils.sheet_to_json(firstSheet, { defval: "", raw: false });
   if (rows.length === 0) {
     throw new Error("The uploaded file has no data rows");
   }
